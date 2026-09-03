@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Spotify – Hip Hop Mix</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    :root {
+      --spotify-green: #1ed760;
+      --spotify-dark: #121212;
+      --spotify-card: #181818;
+      --spotify-gray: #b3b3b3;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      background-color: var(--spotify-dark);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================
+       VIEW 1: PLAYLIST DASHBOARD (DESKTOP STYLE)
+       ========================================== */
+    #playlistView {
+      display: block;
+      width: 100%;
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    .playlist-header {
+      background: linear-gradient(to bottom, #a31d1d 0%, #3a0000 70%, #121212 100%);
+      padding: 40px 32px 24px;
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+    }
+
+    .playlist-cover {
+      width: 200px;
+      height: 200px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .header-details { display: flex; flex-direction: column; gap: 8px; }
+    .public-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .playlist-title { font-size: 64px; font-weight: 900; letter-spacing: -2px; line-height: 1; margin: 4px 0; }
+    .playlist-artists { font-size: 14px; color: #e0e0e0; font-weight: 500; }
+    .meta-info { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #e0e0e0; }
+
+    .action-bar {
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--spotify-dark);
+    }
+
+    .action-left { display: flex; align-items: center; gap: 20px; }
+    
+    .play-circle-btn {
+      width: 52px;
+      height: 52px;
+      background: var(--spotify-green);
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .play-circle-btn:active { transform: scale(0.95); }
+
+    .action-icon { background: none; border: none; color: var(--spotify-gray); cursor: pointer; }
+
+    .table-container { padding: 0 32px 40px; }
+    .song-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; color: var(--spotify-gray); }
+    .song-table th { border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 0 16px 12px; font-size: 12px; text-transform: uppercase; }
+    .song-table td { padding: 10px 16px; vertical-align: middle; }
+
+    .song-row { border-radius: 4px; cursor: pointer; transition: background 0.2s ease; }
+    .song-row:hover { background: rgba(255, 255, 255, 0.1); }
+    .song-row:hover .row-index { color: #fff; }
+
+    .song-title-cell { display: flex; align-items: center; gap: 12px; }
+    .track-thumb { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+    .track-info-text { display: flex; flex-direction: column; }
+    .track-title { font-size: 15px; color: #fff; font-weight: 500; }
+    .track-artist { font-size: 13px; color: var(--spotify-gray); }
+
+    /* ==========================================
+       VIEW 2: ORIGINAL FULL PLAYER SCREEN
+       ========================================== */
+    #playerView {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background-color: var(--spotify-dark);
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+    }
+
+    .bg-blur {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle at 50% 30%, #4c2d20 0%, var(--spotify-dark) 70%);
+      filter: blur(50px);
+      opacity: 0.85;
+      z-index: 0;
+      transition: background 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: calc(env(safe-area-inset-top) + 12px) 24px calc(env(safe-area-inset-bottom) + 16px);
+    }
+
+    .top-bar { display: flex; justify-content: space-between; align-items: center; height: 44px; }
+    .top-bar-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+    .top-bar-title { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; color: #d1d1d1; text-align: center; }
+    .playlist-name-sub { font-size: 12px; color: #fff; font-weight: 700; margin-top: 1px; letter-spacing: 0; }
+
+    .album-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px 0; }
+    .album-art {
+      width: 100%;
+      max-width: 330px;
+      aspect-ratio: 1 / 1;
+      background: #282828;
+      border-radius: 8px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.65);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .album-art:active { transform: scale(0.97); }
+    .album-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .track-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .track-details { display: flex; flex-direction: column; gap: 3px; max-width: 80%; }
+    .main-track-title { font-size: 21px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .main-track-artist { font-size: 14.5px; color: var(--spotify-gray); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .heart-btn {
+      background: none; border: none; cursor: pointer; padding: 4px; color: var(--spotify-gray);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s ease;
+    }
+    .heart-btn.liked { color: var(--spotify-green); transform: scale(1.15); }
+    .heart-btn.liked svg { fill: var(--spotify-green); stroke: var(--spotify-green); }
+
+    .progress-container { margin-bottom: 12px; padding: 8px 0; cursor: pointer; }
+    .progress-bar { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 2px; position: relative; }
+    .progress-fill { width: 0%; height: 100%; background: #fff; border-radius: 2px; position: relative; }
+    .progress-container:hover .progress-fill { background: var(--spotify-green); }
+    .timestamps { display: flex; justify-content: space-between; font-size: 11px; color: var(--spotify-gray); font-weight: 500; margin-top: 8px; }
+
+    .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .control-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; opacity: 0.9; }
+    .control-btn:active { opacity: 0.5; }
+    .play-btn { width: 64px; height: 64px; background: #fff; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; color: #000; cursor: pointer; box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+
+    /* Vault Modal */
+    .vault-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #121212;
+      z-index: 100;
+      padding: calc(env(safe-area-inset-top) + 16px) 20px env(safe-area-inset-bottom);
+      flex-direction: column;
+      gap: 15px;
+      overflow-y: auto;
+    }
+    .vault-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #282828; }
+    .clip-card { background: #181818; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
+    .clip-card video { width: 100%; border-radius: 6px; max-height: 220px; background: #000; }
+    .clip-actions { display: flex; justify-content: space-between; align-items: center; }
+    .clip-actions button { background: var(--spotify-green); border: none; color: #000; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .clip-actions button.delete-btn { background: #e91429; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== VIEW 1: PLAYLIST DASHBOARD ==================== -->
+  <div id="playlistView">
+    <div class="playlist-header">
+      <img class="playlist-cover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix">
+      <div class="header-details">
+        <span class="public-tag">Public Playlist</span>
+        <h1 class="playlist-title">Hip Hop Mix</h1>
+        <div class="playlist-artists">Kendrick Lamar, Al James, Because, Hev Abi, and more</div>
+        <div class="meta-info">Spotify • 8 songs, about 28 min</div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div class="action-left">
+        <button class="play-circle-btn" onclick="openPlayer(0)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#000"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <button class="action-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="song-table">
+        <thead>
+          <tr>
+            <th style="width: 40px; text-align: center;">#</th>
+            <th>Title</th>
+            <th>Album</th>
+            <th style="text-align: right;">Duration</th>
+          </tr>
+        </thead>
+        <tbody id="playlistTableBody">
+          <!-- Rows dynamically rendered via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== VIEW 2: ORIGINAL PLAYER SCREEN ==================== -->
+  <div id="playerView">
+    <div class="bg-blur" id="bgBlur"></div>
+
+    <div class="app-container">
+      <!-- Top Navigation -->
+      <div class="top-bar">
+        <button class="top-bar-btn" onclick="closePlayer()" aria-label="Back to Playlist">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div class="top-bar-title">
+          PLAYING FROM PLAYLIST
+          <div class="playlist-name-sub">Hip Hop Mix</div>
+        </div>
+        <button class="top-bar-btn" id="zoomInBtn" aria-label="Zoom Camera Controls">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </button>
+      </div>
+
+      <!-- Main Cover Art & Vault Trigger -->
+      <div class="album-container">
+        <div class="album-art" id="vaultTrigger">
+          <img id="mainAlbumArt" src="" alt="Album Cover">
+        </div>
+      </div>
+
+      <!-- Track Details & Scrub Control -->
+      <div>
+        <div class="track-info">
+          <div class="track-details">
+            <div class="main-track-title" id="mainTitle">---</div>
+            <div class="main-track-artist" id="mainArtist">---</div>
+          </div>
+          <button class="heart-btn" id="heartBtn" aria-label="Like Track">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          </button>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="timestamps">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <!-- Audio Player Controls -->
+        <div class="controls">
+          <button class="control-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+          <button class="control-btn" id="prevTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button class="play-btn" id="playBtn"><svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+          <button class="control-btn" id="nextTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button class="control-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Element -->
+  <audio id="customAudio" preload="metadata"></audio>
+
+  <!-- Hidden Video Elements for Recording Feature -->
+  <video id="hiddenVideo" autoplay muted playsinline style="display:none;"></video>
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+  <!-- Saved Video Clips Vault Modal -->
+  <div class="vault-modal" id="vaultModal">
+    <div class="vault-header">
+      <h3 style="font-size: 18px; font-weight: 700;">Saved Recordings</h3>
+      <button onclick="toggleVault(false)" style="background:none; border:none; color:var(--spotify-green); font-weight:700; font-size:15px; cursor:pointer;">Done</button>
+    </div>
+    <div id="clipList" style="display:flex; flex-direction:column; gap:15px; margin-top: 10px;"></div>
+  </div>
+
+  <script>
+    // Updated Playlist Track Database with Provided Artwork Links
+    const trackDatabase = [
+      { id: 0, title: "Not Like Us", artist: "Kendrick Lamar", album: "Not Like Us", duration: "4:34", cover: "https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad", theme: "radial-gradient(circle at 50% 30%, #4c2d20 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/237338817/OU1JdG5tRkgxS3R6VC9lcVJuTGlnMVlaUEZCOWxqb2N5eDRVT2UzZkt4elREd004UzdibDdQOVRYaTdOdE1wN0RSNnoya1oreUFzR1lRN0d0S2kyM3RDbUg2TFh4TjRFQXVnMUh5dUlDcnpWYUFsV2twaG1VbkdEbnMrNnJ2MHc/Kendrick_Lamar_-_Not_Like_Us_(mp3.pm).mp3" },
+      { id: 1, title: "Pa-umaga", artist: "Al James", album: "Pa-umaga", duration: "3:18", cover: "https://i.scdn.co/image/ab67616d0000b273ef450235c97ce225c5be5879", theme: "radial-gradient(circle at 50% 30%, #3e261a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/125542336/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VmVFR01OZVM0QmtZTS9JNmloSnJwZElqV04xaFEySkkzV1FJS3EwTFoyaFFXYlVjY0M0TFpOc2l3d29uQzhSSjJCZkIydHBPZm1kM3JDU1lkVnp3RG0/Al_James_-_Pa-Umaga_(mp3.pm).mp3" },
+      { id: 2, title: "Ngayong Gabi", artist: "Al James", album: "Ngayong Gabi", duration: "3:52", cover: "https://i.scdn.co/image/ab67616d0000b273317c2d7e135c19f83f96be2a", theme: "radial-gradient(circle at 50% 30%, #1a2a3a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/192775097/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V0ljN2lMK1pZM1E2NzBxTGRyL3dFYWY4ck9QS095UXB5SURreFZjZmJmU0lsa3ZFRHFIdXY0YXZiRjlOVVQ5WjZtc041dXlwZXpvUWt1cWU5NTc5cmw/Al_James_-_Ngayong_Gabi_(mp3.pm).mp3" },
+      { id: 3, title: "Latina", artist: "Al James", album: "Latina", duration: "3:30", cover: "https://i.scdn.co/image/ab67616d0000b273a1d66189547e0ab221ef8618", theme: "radial-gradient(circle at 50% 30%, #4a1d24 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/160206792/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VjBKc2RheTg5NnQ5b0EyWE9jb21nZTFUUlV6UUlUbjFRNVAwNFBJZGkrU243aTNENzZxVVhTQ01pREwzZ2xrYVZ0eWxNQUl1NnZhR3JRanV5V1QyMzM/Al_James_-_Latina_(mp3.pm).mp3" },
+      { id: 4, title: "Marlboro Black", artist: "Because", album: "Heartbreak SZN", duration: "3:41", cover: "https://i.scdn.co/image/ab67616d0000b273bd77a2bc318927581500f6ed", theme: "radial-gradient(circle at 50% 30%, #1f1f24 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/105736944/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2NVLzNCZVBWR29WY2Q2dzJVdE1jb0I1Mi9hSFdZRjM4bk9LcGNsQi8yK2JqYitpL05GclNqSURqaGltZ1M2VmdIT3N4VzJnT2xFQTdMcXhhR3EzSlg/Because_-_Marlboro_Black_(mp3.pm).mp3" },
+      { id: 5, title: "Sandali", artist: "Because", album: "Sandali", duration: "3:22", cover: "https://i.scdn.co/image/ab67616d0000b273bd77a2bc318927581500f6ed", theme: "radial-gradient(circle at 50% 30%, #22303c 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/111691322/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VDA5bHZ0eDE3OW50c3FIeWpkQm9RZGNMZTJPYkRPc2hjUk9lci9McDZISFZ5c1ZVMCtKNW9zNXdROVR5NXhvWk5UWUNwSUpHdjFQeUNqZWtBc215UmQ/Because_-_Sandali_(mp3.pm).mp3" },
+      { id: 6, title: "Filipina Girl", artist: "Billy Crawford, Marcus Davis, James Reid", album: "Workin'", duration: "3:48", cover: "https://i.scdn.co/image/ab67616d0000b2731b86eed539c7b6c273b9a3e5", theme: "radial-gradient(circle at 50% 30%, #3d2b1f 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/151330267/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VlhIaHpXTW5jRC95WlhQSmZXU1U3ajJ0UkVGQ09Yb0dFRGVDYTZVaHRiTm5rNi9rUThjQXBYRzR2V3JOaGJBS3NkUDhhUlFnT2VhMXhFV3hvV2R5U1U/Billy_Crawford_feat._Marcus_Davis_James_Reid_-_Filipina_Girl_(mp3.pm).mp3" },
+      { id: 7, title: "Alam Mo Ba Girl", artist: "Hev Abi", album: "Kung Alam Mo Lang", duration: "3:10", cover: "https://i.scdn.co/image/ab67616d0000b27331327372a2272bb39f5ab4ab", theme: "radial-gradient(circle at 50% 30%, #2b3a28 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/237132332/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2g3MU01THdvelpJRW1hVjVSZDZCOEpyM24vMFBpazRzb3RFaUpTVlZJWFFxYzByQ01lRW1iNk42ZlIvdlcvNFEyTkZkUzMzVXJLYjRCb2thSnlEdSs/Hev_Abi_-_Alam_Mo_Ba_Girl_(mp3.pm).mp3" }
+    ];
+
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+    let currentZoom = 1.0;
+    let rawStream, canvasStream, mediaRecorder, animFrameId, db;
+    let chunks = [];
+
+    const playlistView = document.getElementById('playlistView');
+    const playerView = document.getElementById('playerView');
+    const tableBody = document.getElementById('playlistTableBody');
+
+    const mainTitle = document.getElementById('mainTitle');
+    const mainArtist = document.getElementById('mainArtist');
+    const mainAlbumArt = document.getElementById('mainAlbumArt');
+    const bgBlur = document.getElementById('bgBlur');
+
+    const customAudio = document.getElementById('customAudio');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const heartBtn = document.getElementById('heartBtn');
+    const progressFill = document.getElementById('progressFill');
+    const currentTimeElem = document.getElementById('currentTime');
+    const durationElem = document.getElementById('duration');
+    const progressContainer = document.getElementById('progressContainer');
+
+    const vaultTrigger = document.getElementById('vaultTrigger');
+    const vaultModal = document.getElementById('vaultModal');
+    const clipList = document.getElementById('clipList');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const hiddenVideo = document.getElementById('hiddenVideo');
+    const hiddenCanvas = document.getElementById('hiddenCanvas');
+    const ctx = hiddenCanvas.getContext('2d');
+
+    // Populate Table Rows
+    function renderPlaylistTable() {
+      tableBody.innerHTML = '';
+      trackDatabase.forEach((track, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'song-row';
+        tr.onclick = () => openPlayer(index);
+        tr.innerHTML = `
+          <td class="row-index" style="text-align: center;">${index + 1}</td>
+          <td>
+            <div class="song-title-cell">
+              <img class="track-thumb" src="${track.cover}" alt="${track.title}">
+              <div class="track-info-text">
+                <span class="track-title">${track.title}</span>
+                <span class="track-artist">${track.artist}</span>
+              </div>
+            </div>
+          </td>
+          <td>${track.album}</td>
+          <td style="text-align: right;">${track.duration}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // View Navigation Controls
+    function openPlayer(index) {
+      currentTrackIndex = index;
+      loadTrack(index);
+      playlistView.style.display = 'none';
+      playerView.style.display = 'block';
+    }
+
+    function closePlayer() {
+      playerView.style.display = 'none';
+      playlistView.style.display = 'block';
+    }
+
+    function loadTrack(index) {
+      const track = trackDatabase[index];
+      mainTitle.innerText = track.title;
+      mainArtist.innerText = track.artist;
+      mainAlbumArt.src = track.cover;
+      bgBlur.style.background = track.theme;
+
+      customAudio.src = track.audio;
+      customAudio.currentTime = 0;
+    }
+
+    // Audio Controls
+    document.getElementById('nextTrackBtn').onclick = () => {
+      currentTrackIndex = (currentTrackIndex + 1) % trackDatabase.length;
+      loadTrack(currentTrackIndex);
+      if (isPlaying) customAudio.play();
+    };
+
+    document.getElementById('prevTrackBtn').onclick = () => {
+      currentTrackIndex = (currentTrackIndex - 1 + trackDatabase.length) % trackDatabase.length;
+      loadTrack(currentTrackIndex);
+      if (isPlaying) customAudio.play();
+    };
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    customAudio.onloadedmetadata = () => {
+      durationElem.innerText = formatTime(customAudio.duration);
+    };
+
+    customAudio.ontimeupdate = () => {
+      if (customAudio.duration) {
+        const percentage = (customAudio.currentTime / customAudio.duration) * 100;
+        progressFill.style.width = `${percentage}%`;
+        currentTimeElem.innerText = formatTime(customAudio.currentTime);
+      }
+    };
+
+    progressContainer.onclick = (e) => {
+      if (customAudio.duration) {
+        const rect = progressContainer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        customAudio.currentTime = (clickX / rect.width) * customAudio.duration;
+      }
+    };
+
+    heartBtn.onclick = () => {
+      heartBtn.classList.toggle('liked');
+      if (customAudio.paused) {
+        customAudio.play().catch(err => alert("Playback error: " + err.message));
+      } else {
+        customAudio.pause();
+      }
+    };
+
+    // Camera Recording Functionality
+    playBtn.onclick = async () => {
+      if (!isPlaying) {
+        try {
+          await initDB();
+          rawStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: true
+          });
+
+          hiddenVideo.srcObject = rawStream;
+          await hiddenVideo.play();
+
+          hiddenCanvas.width = hiddenVideo.videoWidth || 1280;
+          hiddenCanvas.height = hiddenVideo.videoHeight || 720;
+          drawCanvasFrame();
+
+          canvasStream = hiddenCanvas.captureStream(30);
+          const audioTrack = rawStream.getAudioTracks()[0];
+          if (audioTrack) canvasStream.addTrack(audioTrack);
+
+          chunks = [];
+          let options = { mimeType: 'video/mp4' };
+          if (!MediaRecorder.isTypeSupported('video/mp4')) options = { mimeType: 'video/webm' };
+
+          mediaRecorder = new MediaRecorder(canvasStream, options);
+          mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+          mediaRecorder.onstop = async () => {
+            const videoBlob = new Blob(chunks, { type: mediaRecorder.mimeType });
+            await saveClip(videoBlob);
+          };
+
+          mediaRecorder.start(1000);
+          customAudio.play();
+
+          isPlaying = true;
+          playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+        } catch (err) {
+          alert("Camera/Audio Access Error: " + err.message);
+        }
+      } else {
+        stopRecording();
+        customAudio.pause();
+        isPlaying = false;
+        playIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+      }
+    };
+
+    function drawCanvasFrame() {
+      if (!hiddenVideo.paused && !hiddenVideo.ended) {
+        const vw = hiddenVideo.videoWidth;
+        const vh = hiddenVideo.videoHeight;
+        const cropW = vw / currentZoom;
+        const cropH = vh / currentZoom;
+        const cropX = (vw - cropW) / 2;
+        const cropY = (vh - cropH) / 2;
+
+        ctx.drawImage(hiddenVideo, cropX, cropY, cropW, cropH, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+        animFrameId = requestAnimationFrame(drawCanvasFrame);
+      }
+    }
+
+    zoomInBtn.onclick = () => { if (currentZoom < 3.5) currentZoom += 0.5; };
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+      if (rawStream) rawStream.getTracks().forEach(track => track.stop());
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+    }
+
+    // Vault Video Storage (IndexedDB)
+    function initDB() {
+      return new Promise((resolve) => {
+        if (db) return resolve(db);
+        const req = indexedDB.open('SpotifyVaultDB', 1);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('clips')) {
+            database.createObjectStore('clips', { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+      });
+    }
+
+    if (vaultTrigger) {
+      vaultTrigger.onclick = () => {
+        toggleVault(true);
+        loadClips();
+      };
+    }
+
+    function toggleVault(show) { vaultModal.style.display = show ? 'flex' : 'none'; }
+
+    async function saveClip(blob) {
+      await initDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction('clips', 'readwrite');
+        tx.objectStore('clips').add({ blob: blob, time: new Date().toLocaleTimeString(), mime: blob.type });
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    async function loadClips() {
+      await initDB();
+      const tx = db.transaction('clips', 'readonly');
+      const req = tx.objectStore('clips').getAll();
+
+      req.onsuccess = () => {
+        clipList.innerHTML = '';
+        if (req.result.length === 0) {
+          clipList.innerHTML = '<p style="color:var(--spotify-gray); text-align:center;">No recordings found.</p>';
+          return;
+        }
+
+        req.result.forEach((item) => {
+          const card = document.createElement('div');
+          card.className = 'clip-card';
+          const videoUrl = URL.createObjectURL(item.blob);
+          card.innerHTML = `
+            <video src="${videoUrl}" controls playsinline></video>
+            <div class="clip-actions">
+              <span style="font-size:12px; color:var(--spotify-gray);">Saved ${item.time}</span>
+              <div style="display:flex; gap:8px;">
+                <button onclick="downloadClip(${item.id})">Save</button>
+                <button class="delete-btn" onclick="deleteClip(${item.id})">Delete</button>
+              </div>
+            </div>
+          `;
+          clipList.appendChild(card);
+        });
+      };
+    }
+
+    async function downloadClip(id) {
+      await initDB();
+      const tx = db.transaction('clips', 'readonly');
+      const req = tx.objectStore('clips').get(id);
+      req.onsuccess = () => {
+        const ext = req.result.mime.includes('mp4') ? 'mp4' : 'webm';
+        const url = URL.createObjectURL(req.result.blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `music_recording_${id}.${ext}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+    }
+
+    async function deleteClip(id) {
+      await initDB();
+      const tx = db.transaction('clips', 'readwrite');
+      tx.objectStore('clips').delete(id);
+      tx.oncomplete = () => loadClips();
+    }
+
+    // Initialize App
+    renderPlaylistTable();
+    initDB();
+  </script>
+</body>
+</html>
