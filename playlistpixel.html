@@ -223,8 +223,8 @@
   <!-- ==================== VIEW 1: PLAYLIST DASHBOARD ==================== -->
   <div id="playlistView">
     <div class="playlist-header">
-      <!-- Clicking playlist image takes 0.5x image capture -->
-      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to take 0.5x Photo">
+      <!-- Clicking playlist image triggers Ultra-Wide (0.5x) photo capture -->
+      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to take 0.5x Ultra-Wide Photo">
       <div class="header-details">
         <span class="public-tag">Public Playlist</span>
         <h1 class="playlist-title">Hip Hop Mix</h1>
@@ -343,7 +343,7 @@
   <script>
     const trackDatabase = [
       { id: 0, title: "Not Like Us", artist: "Kendrick Lamar", album: "Not Like Us", duration: "4:34", cover: "https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad", theme: "radial-gradient(circle at 50% 30%, #4c2d20 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/237338817/OU1JdG5tRkgxS3R6VC9lcVJuTGlnMVlaUEZCOWxqb2N5eDRVT2UzZkt4elREd004UzdibDdQOVRYaTdOdE1wN0RSNnoya1oreUFzR1lRN0d0S2kyM3RDbUg2TFh4TjRFQXVnMUh5dUlDcnpWYUFsV2twaG1VbkdEbnMrNnJ2MHc/Kendrick_Lamar_-_Not_Like_Us_(mp3.pm).mp3" },
-      { id: 1, title: "Pa-umaga", artist: "Al James", album: "Pa-umaga", duration: "3:18", cover: "https://i.scdn.co/image/ab67616d0000b273ef450235c97ce225c5be5879", theme: "radial-gradient(circle at 50% 30%, #3e261a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/125542336/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VmVFR01OZVM0QmtZTS9JNmloSnJwZElqV04xaFEySkkzV1FJS3EwTFoyaFFXYlVjY0M0TFpOc2l3d29uQzhSSjJCZkIydHBPZm1kM3JDU1lkVnp3RG0/Al_James_-_Pa-Umaga_(mp3.pm).mp3" },
+      { id: 1, title: "Pa-umaga", artist: "Al James", album: "Pa-umaga", duration: "3:18", cover: "https://i.scdn.co/image/ab67616d0000b273ef450235c97ce225c5be5879", theme: "radial-gradient(circle at 50% 30%, #3e261a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/125542336/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VmVFR01OZVM0QmtZTS9JNmloJnJwZElqV04xaFEySkkzV1FJS3EwTFoyaFFXYlVjY0M0TFpOc2l3d29uQzhSSjJCZkIydHBPZm1kM3JDU1lkVnp3RG0/Al_James_-_Pa-Umaga_(mp3.pm).mp3" },
       { id: 2, title: "Ngayong Gabi", artist: "Al James", album: "Ngayong Gabi", duration: "3:52", cover: "https://i.scdn.co/image/ab67616d0000b273317c2d7e135c19f83f96be2a", theme: "radial-gradient(circle at 50% 30%, #1a2a3a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/192775097/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2ljN2lMK1pZM1E2NzBxTGRyL3dFYWY4ck9QS095UXB5SURreFZjZmJmU0lsa3ZFRHFIdXY0YXZiRjlOVVQ5WjZtc041dXlwZXpvUWt1cWU5NTc5cmw/Al_James_-_Ngayong_Gabi_(mp3.pm).mp3" },
       { id: 3, title: "Latina", artist: "Al James", album: "Latina", duration: "3:30", cover: "https://i.scdn.co/image/ab67616d0000b273a1d66189547e0ab221ef8618", theme: "radial-gradient(circle at 50% 30%, #4a1d24 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/160206792/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VjBKc2RheTg5NnQ5b0EyWE9jb21nZTFUUlV6UUlUbjFRNVAwNFBJZGkrU243aTNENzZxVVhTQ01pREwzZ2xrYVZ0eWxNQUl1NnZhR3JRanV5V1QyMzM/Al_James_-_Latina_(mp3.pm).mp3" },
       { id: 4, title: "Marlboro Black", artist: "Because", album: "Heartbreak SZN", duration: "3:41", cover: "https://i.scdn.co/image/ab67616d0000b273bd77a2bc318927581500f6ed", theme: "radial-gradient(circle at 50% 30%, #1f1f24 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/105736944/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2NVLzNCZVBWR29WY2Q2dzJVdE1jb0I1Mi9hSFdZRjM4bk9LcGNsQi8yK2JqYitpL05GclNqSURqaGltZ1M2VmdIT3N4VzJnT2xFQTdMcXhhR3EzSlg/Because_-_Marlboro_Black_(mp3.pm).mp3" },
@@ -392,7 +392,7 @@
     const hiddenCanvas = document.getElementById('hiddenCanvas');
     const ctx = hiddenCanvas.getContext('2d');
 
-    // Populate Table Rows
+    // Render Playlist Table Rows
     function renderPlaylistTable() {
       tableBody.innerHTML = '';
       trackDatabase.forEach((track, index) => {
@@ -495,7 +495,7 @@
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
 
-      // Search for Pixel ultra-wide device labeling patterns
+      // Search for physical ultra-wide device labeling patterns
       const ultraWideDevice = videoDevices.find(d => {
         const label = d.label.toLowerCase();
         return label.includes('ultra') || 
@@ -505,7 +505,7 @@
                label.includes('facing back 1');
       });
 
-      // Explicit target, or fallback to 2nd rear device ID on Android Chrome
+      // Target explicit wide lens ID, or fallback to 2nd rear device ID
       return ultraWideDevice ? ultraWideDevice.deviceId : (videoDevices[1]?.deviceId || null);
     }
 
@@ -585,29 +585,41 @@
       }
     }
 
-    // Trigger Photo Capture on Playlist Cover Image Click (.5x Mode)
+    // Trigger Photo Capture on Playlist Cover Image Click (Uses Ultra-Wide / 0.5x Camera)
     playlistHeaderCover.onclick = async () => {
       try {
-        const ultraWideId = await getUltraWideDeviceId();
-        const videoConstraints = ultraWideId 
-          ? { deviceId: { exact: ultraWideId } }
-          : { facingMode: "environment" };
+        // Enumerate devices to target ultra-wide lens
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: videoConstraints
+        let ultraWideDevice = videoDevices.find(d => {
+          const label = d.label.toLowerCase();
+          return label.includes('ultra') || 
+                 label.includes('wide') || 
+                 label.includes('0.5x') || 
+                 label.includes('back 1') ||
+                 label.includes('facing back 1');
         });
+
+        const targetDeviceId = ultraWideDevice ? ultraWideDevice.deviceId : (videoDevices[1]?.deviceId || null);
+
+        const videoConstraints = targetDeviceId 
+          ? { video: { deviceId: { exact: targetDeviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } } }
+          : { video: { facingMode: "environment" } };
+
+        const stream = await navigator.mediaDevices.getUserMedia(videoConstraints);
 
         const tempVideo = document.createElement('video');
         tempVideo.srcObject = stream;
         tempVideo.setAttribute('playsinline', 'true');
         await tempVideo.play();
 
-        // Brief delay for sensor focus
-        await new Promise(r => setTimeout(r, 300));
+        // Brief delay for sensor focus and exposure stabilization
+        await new Promise(r => setTimeout(r, 400));
 
         const tempCanvas = document.createElement('canvas');
-        const vw = tempVideo.videoWidth || 1280;
-        const vh = tempVideo.videoHeight || 720;
+        const vw = tempVideo.videoWidth || 1920;
+        const vh = tempVideo.videoHeight || 1080;
         tempCanvas.width = vw;
         tempCanvas.height = vh;
 
@@ -618,13 +630,14 @@
         flashOverlay.style.opacity = '1';
         setTimeout(() => { flashOverlay.style.opacity = '0'; }, 150);
 
+        // Save high-res capture to IndexedDB Vault
         tempCanvas.toBlob(async (blob) => {
           await saveMedia(blob, 'image');
           stream.getTracks().forEach(track => track.stop());
         }, 'image/jpeg', 0.95);
 
       } catch (err) {
-        alert("0.5x Photo Capture Error: " + err.message);
+        alert("0.5x Ultra-Wide Photo Capture Error: " + err.message);
       }
     };
 
