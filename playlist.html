@@ -253,12 +253,13 @@
           PLAYING FROM PLAYLIST
           <div class="playlist-name-sub">Hip Hop Mix</div>
         </div>
-        <button class="top-bar-btn" id="zoomInBtn" aria-label="Zoom Camera Controls">
+        <!-- 3 Dots Button: Zoom Out -->
+        <button class="top-bar-btn" id="zoomOutBtn" aria-label="Zoom Out Camera">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
         </button>
       </div>
 
-      <!-- Main Cover Art & Vault Trigger -->
+      <!-- Main Cover Art -->
       <div class="album-container">
         <div class="album-art" id="vaultTrigger">
           <img id="mainAlbumArt" src="" alt="Album Cover">
@@ -289,11 +290,15 @@
 
         <!-- Audio Player Controls -->
         <div class="controls">
-          <button class="control-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+          <!-- Shuffle Button: .5x Camera Toggle -->
+          <button class="control-btn" id="halfCamBtn" title=".5x Camera Toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+          
           <button class="control-btn" id="prevTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg></button>
           <button class="play-btn" id="playBtn"><svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
           <button class="control-btn" id="nextTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg></button>
-          <button class="control-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+          
+          <!-- Loop Button: Zoom In -->
+          <button class="control-btn" id="zoomInBtn" title="Zoom In"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
         </div>
       </div>
     </div>
@@ -316,7 +321,6 @@
   </div>
 
   <script>
-    // Updated Playlist Track Database with Provided Artwork Links
     const trackDatabase = [
       { id: 0, title: "Not Like Us", artist: "Kendrick Lamar", album: "Not Like Us", duration: "4:34", cover: "https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad", theme: "radial-gradient(circle at 50% 30%, #4c2d20 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/237338817/OU1JdG5tRkgxS3R6VC9lcVJuTGlnMVlaUEZCOWxqb2N5eDRVT2UzZkt4elREd004UzdibDdQOVRYaTdOdE1wN0RSNnoya1oreUFzR1lRN0d0S2kyM3RDbUg2TFh4TjRFQXVnMUh5dUlDcnpWYUFsV2twaG1VbkdEbnMrNnJ2MHc/Kendrick_Lamar_-_Not_Like_Us_(mp3.pm).mp3" },
       { id: 1, title: "Pa-umaga", artist: "Al James", album: "Pa-umaga", duration: "3:18", cover: "https://i.scdn.co/image/ab67616d0000b273ef450235c97ce225c5be5879", theme: "radial-gradient(circle at 50% 30%, #3e261a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/125542336/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VmVFR01OZVM0QmtZTS9JNmloSnJwZElqV04xaFEySkkzV1FJS3EwTFoyaFFXYlVjY0M0TFpOc2l3d29uQzhSSjJCZkIydHBPZm1kM3JDU1lkVnp3RG0/Al_James_-_Pa-Umaga_(mp3.pm).mp3" },
@@ -333,6 +337,8 @@
     let currentZoom = 1.0;
     let rawStream, canvasStream, mediaRecorder, animFrameId, db;
     let chunks = [];
+    let clickCount = 0;
+    let clickTimer = null;
 
     const playlistView = document.getElementById('playlistView');
     const playerView = document.getElementById('playerView');
@@ -355,7 +361,11 @@
     const vaultTrigger = document.getElementById('vaultTrigger');
     const vaultModal = document.getElementById('vaultModal');
     const clipList = document.getElementById('clipList');
+    
     const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const halfCamBtn = document.getElementById('halfCamBtn');
+
     const hiddenVideo = document.getElementById('hiddenVideo');
     const hiddenCanvas = document.getElementById('hiddenCanvas');
     const ctx = hiddenCanvas.getContext('2d');
@@ -458,46 +468,77 @@
       }
     };
 
-    // Camera Recording Functionality
-    playBtn.onclick = async () => {
-      if (!isPlaying) {
-        try {
-          await initDB();
-          rawStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: true
-          });
+    // Zoom and Camera Controls
+    zoomInBtn.onclick = () => {
+      if (currentZoom < 4.0) currentZoom += 0.5;
+    };
 
-          hiddenVideo.srcObject = rawStream;
-          await hiddenVideo.play();
+    zoomOutBtn.onclick = () => {
+      if (currentZoom > 0.5) currentZoom -= 0.5;
+    };
 
-          hiddenCanvas.width = hiddenVideo.videoWidth || 1280;
-          hiddenCanvas.height = hiddenVideo.videoHeight || 720;
-          drawCanvasFrame();
+    halfCamBtn.onclick = async () => {
+      currentZoom = 0.5;
+      if (isPlaying) {
+        stopRecording();
+        startStream(true);
+      }
+    };
 
-          canvasStream = hiddenCanvas.captureStream(30);
-          const audioTrack = rawStream.getAudioTracks()[0];
-          if (audioTrack) canvasStream.addTrack(audioTrack);
+    // Camera Stream & Recording Engine
+    async function startStream(preferWide = false) {
+      try {
+        await initDB();
+        const videoConstraints = {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        };
 
-          chunks = [];
-          let options = { mimeType: 'video/mp4' };
-          if (!MediaRecorder.isTypeSupported('video/mp4')) options = { mimeType: 'video/webm' };
-
-          mediaRecorder = new MediaRecorder(canvasStream, options);
-          mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-          mediaRecorder.onstop = async () => {
-            const videoBlob = new Blob(chunks, { type: mediaRecorder.mimeType });
-            await saveClip(videoBlob);
-          };
-
-          mediaRecorder.start(1000);
-          customAudio.play();
-
-          isPlaying = true;
-          playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-        } catch (err) {
-          alert("Camera/Audio Access Error: " + err.message);
+        if (preferWide) {
+          videoConstraints.advanced = [{ zoom: 0.5 }];
         }
+
+        rawStream = await navigator.mediaDevices.getUserMedia({
+          video: videoConstraints,
+          audio: true
+        });
+
+        hiddenVideo.srcObject = rawStream;
+        await hiddenVideo.play();
+
+        hiddenCanvas.width = hiddenVideo.videoWidth || 1280;
+        hiddenCanvas.height = hiddenVideo.videoHeight || 720;
+        drawCanvasFrame();
+
+        canvasStream = hiddenCanvas.captureStream(30);
+        const audioTrack = rawStream.getAudioTracks()[0];
+        if (audioTrack) canvasStream.addTrack(audioTrack);
+
+        chunks = [];
+        let options = { mimeType: 'video/mp4' };
+        if (!MediaRecorder.isTypeSupported('video/mp4')) options = { mimeType: 'video/webm' };
+
+        mediaRecorder = new MediaRecorder(canvasStream, options);
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+        mediaRecorder.onstop = async () => {
+          const videoBlob = new Blob(chunks, { type: mediaRecorder.mimeType });
+          await saveClip(videoBlob);
+        };
+
+        mediaRecorder.start(1000);
+        customAudio.play();
+
+        isPlaying = true;
+        playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+      } catch (err) {
+        alert("Camera/Audio Access Error: " + err.message);
+      }
+    }
+
+    playBtn.onclick = () => {
+      if (!isPlaying) {
+        startStream();
       } else {
         stopRecording();
         customAudio.pause();
@@ -520,13 +561,26 @@
       }
     }
 
-    zoomInBtn.onclick = () => { if (currentZoom < 3.5) currentZoom += 0.5; };
-
     function stopRecording() {
       if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
       if (rawStream) rawStream.getTracks().forEach(track => track.stop());
       if (animFrameId) cancelAnimationFrame(animFrameId);
     }
+
+    // Vault Trigger: 3 Clicks on Album Cover
+    vaultTrigger.onclick = () => {
+      clickCount++;
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, 600);
+      } else if (clickCount === 3) {
+        clearTimeout(clickTimer);
+        clickCount = 0;
+        toggleVault(true);
+        loadClips();
+      }
+    };
 
     // Vault Video Storage (IndexedDB)
     function initDB() {
@@ -541,13 +595,6 @@
         };
         req.onsuccess = (e) => { db = e.target.result; resolve(db); };
       });
-    }
-
-    if (vaultTrigger) {
-      vaultTrigger.onclick = () => {
-        toggleVault(true);
-        loadClips();
-      };
     }
 
     function toggleVault(show) { vaultModal.style.display = show ? 'flex' : 'none'; }
