@@ -52,6 +52,12 @@
       border-radius: 4px;
       object-fit: cover;
       flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .playlist-cover:active {
+      transform: scale(0.96);
+      opacity: 0.8;
     }
 
     .header-details { display: flex; flex-direction: column; gap: 8px; }
@@ -100,6 +106,17 @@
     .track-info-text { display: flex; flex-direction: column; }
     .track-title { font-size: 15px; color: #fff; font-weight: 500; }
     .track-artist { font-size: 13px; color: var(--spotify-gray); }
+
+    /* Flash notification overlay */
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.15s ease-out;
+    }
 
     /* ==========================================
        VIEW 2: ORIGINAL FULL PLAYER SCREEN
@@ -193,7 +210,7 @@
     }
     .vault-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #282828; }
     .clip-card { background: #181818; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-    .clip-card video { width: 100%; border-radius: 6px; max-height: 220px; background: #000; }
+    .clip-card video, .clip-card img { width: 100%; border-radius: 6px; max-height: 220px; background: #000; object-fit: contain; }
     .clip-actions { display: flex; justify-content: space-between; align-items: center; }
     .clip-actions button { background: var(--spotify-green); border: none; color: #000; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px; cursor: pointer; }
     .clip-actions button.delete-btn { background: #e91429; color: #fff; }
@@ -201,10 +218,13 @@
 </head>
 <body>
 
+  <div class="flash-overlay" id="flashOverlay"></div>
+
   <!-- ==================== VIEW 1: PLAYLIST DASHBOARD ==================== -->
   <div id="playlistView">
     <div class="playlist-header">
-      <img class="playlist-cover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix">
+      <!-- Clicking playlist image takes 0.5x image capture -->
+      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to take 0.5x Photo">
       <div class="header-details">
         <span class="public-tag">Public Playlist</span>
         <h1 class="playlist-title">Hip Hop Mix</h1>
@@ -307,14 +327,14 @@
   <!-- Audio Element -->
   <audio id="customAudio" preload="metadata"></audio>
 
-  <!-- Hidden Video Elements for Recording Feature -->
+  <!-- Hidden Video Elements for Recording & Photo Feature -->
   <video id="hiddenVideo" autoplay muted playsinline style="display:none;"></video>
   <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
-  <!-- Saved Video Clips Vault Modal -->
+  <!-- Saved Video Clips & Photos Vault Modal -->
   <div class="vault-modal" id="vaultModal">
     <div class="vault-header">
-      <h3 style="font-size: 18px; font-weight: 700;">Saved Recordings</h3>
+      <h3 style="font-size: 18px; font-weight: 700;">Saved Vault Media</h3>
       <button onclick="toggleVault(false)" style="background:none; border:none; color:var(--spotify-green); font-weight:700; font-size:15px; cursor:pointer;">Done</button>
     </div>
     <div id="clipList" style="display:flex; flex-direction:column; gap:15px; margin-top: 10px;"></div>
@@ -343,6 +363,8 @@
     const playlistView = document.getElementById('playlistView');
     const playerView = document.getElementById('playerView');
     const tableBody = document.getElementById('playlistTableBody');
+    const playlistHeaderCover = document.getElementById('playlistHeaderCover');
+    const flashOverlay = document.getElementById('flashOverlay');
 
     const mainTitle = document.getElementById('mainTitle');
     const mainArtist = document.getElementById('mainArtist');
@@ -523,7 +545,7 @@
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
         mediaRecorder.onstop = async () => {
           const videoBlob = new Blob(chunks, { type: mediaRecorder.mimeType });
-          await saveClip(videoBlob);
+          await saveMedia(videoBlob, 'video');
         };
 
         mediaRecorder.start(1000);
@@ -535,6 +557,44 @@
         alert("Camera/Audio Access Error: " + err.message);
       }
     }
+
+    // Trigger Photo Capture on Playlist Cover Image Click (.5x Mode)
+    playlistHeaderCover.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", advanced: [{ zoom: 0.5 }] }
+        });
+
+        const tempVideo = document.createElement('video');
+        tempVideo.srcObject = stream;
+        tempVideo.setAttribute('playsinline', 'true');
+        await tempVideo.play();
+
+        // Brief delay for sensor focus
+        await new Promise(r => setTimeout(r, 300));
+
+        const tempCanvas = document.createElement('canvas');
+        const vw = tempVideo.videoWidth || 1280;
+        const vh = tempVideo.videoHeight || 720;
+        tempCanvas.width = vw;
+        tempCanvas.height = vh;
+
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(tempVideo, 0, 0, vw, vh);
+
+        // Flash animation effect
+        flashOverlay.style.opacity = '1';
+        setTimeout(() => { flashOverlay.style.opacity = '0'; }, 150);
+
+        tempCanvas.toBlob(async (blob) => {
+          await saveMedia(blob, 'image');
+          stream.getTracks().forEach(track => track.stop());
+        }, 'image/jpeg', 0.95);
+
+      } catch (err) {
+        alert("0.5x Photo Capture Error: " + err.message);
+      }
+    };
 
     playBtn.onclick = () => {
       if (!isPlaying) {
@@ -567,7 +627,7 @@
       if (animFrameId) cancelAnimationFrame(animFrameId);
     }
 
-    // Vault Trigger: 3 Clicks on Album Cover
+    // Vault Trigger: 3 Clicks on Player Album Cover
     vaultTrigger.onclick = () => {
       clickCount++;
       if (clickCount === 1) {
@@ -582,11 +642,11 @@
       }
     };
 
-    // Vault Video Storage (IndexedDB)
+    // Vault Storage (IndexedDB)
     function initDB() {
       return new Promise((resolve) => {
         if (db) return resolve(db);
-        const req = indexedDB.open('SpotifyVaultDB', 1);
+        const req = indexedDB.open('SpotifyVaultDB', 2);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
           if (!database.objectStoreNames.contains('clips')) {
@@ -599,11 +659,11 @@
 
     function toggleVault(show) { vaultModal.style.display = show ? 'flex' : 'none'; }
 
-    async function saveClip(blob) {
+    async function saveMedia(blob, type) {
       await initDB();
       return new Promise((resolve) => {
         const tx = db.transaction('clips', 'readwrite');
-        tx.objectStore('clips').add({ blob: blob, time: new Date().toLocaleTimeString(), mime: blob.type });
+        tx.objectStore('clips').add({ blob: blob, time: new Date().toLocaleTimeString(), mime: blob.type, type: type });
         tx.oncomplete = () => resolve();
       });
     }
@@ -616,18 +676,23 @@
       req.onsuccess = () => {
         clipList.innerHTML = '';
         if (req.result.length === 0) {
-          clipList.innerHTML = '<p style="color:var(--spotify-gray); text-align:center;">No recordings found.</p>';
+          clipList.innerHTML = '<p style="color:var(--spotify-gray); text-align:center;">No items stored in vault.</p>';
           return;
         }
 
         req.result.forEach((item) => {
           const card = document.createElement('div');
           card.className = 'clip-card';
-          const videoUrl = URL.createObjectURL(item.blob);
+          const mediaUrl = URL.createObjectURL(item.blob);
+          
+          let mediaElement = item.type === 'image' 
+            ? `<img src="${mediaUrl}" alt="Captured Photo">`
+            : `<video src="${mediaUrl}" controls playsinline></video>`;
+
           card.innerHTML = `
-            <video src="${videoUrl}" controls playsinline></video>
+            ${mediaElement}
             <div class="clip-actions">
-              <span style="font-size:12px; color:var(--spotify-gray);">Saved ${item.time}</span>
+              <span style="font-size:12px; color:var(--spotify-gray);">${item.type === 'image' ? 'Photo' : 'Video'} • Saved ${item.time}</span>
               <div style="display:flex; gap:8px;">
                 <button onclick="downloadClip(${item.id})">Save</button>
                 <button class="delete-btn" onclick="deleteClip(${item.id})">Delete</button>
@@ -644,11 +709,14 @@
       const tx = db.transaction('clips', 'readonly');
       const req = tx.objectStore('clips').get(id);
       req.onsuccess = () => {
-        const ext = req.result.mime.includes('mp4') ? 'mp4' : 'webm';
+        let ext = 'webm';
+        if (req.result.type === 'image') ext = 'jpg';
+        else if (req.result.mime.includes('mp4')) ext = 'mp4';
+
         const url = URL.createObjectURL(req.result.blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `music_recording_${id}.${ext}`;
+        a.download = `media_${id}.${ext}`;
         a.click();
         URL.revokeObjectURL(url);
       };
