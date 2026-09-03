@@ -2,19 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Messages</title>
+  
+  <!-- iOS Standalone Full-Screen App Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Messages">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    body {
+    html, body {
       background-color: #000;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      width: 100%;
       height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+      position: fixed;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     /* Header Controls */
@@ -45,7 +59,7 @@
     .contact-name { font-size: 12px; color: #8e8e93; }
     .zoom-out-btn { width: 60px; height: 30px; cursor: pointer; }
 
-    /* Chat Area */
+    /* Chat Log */
     .chat-container {
       flex: 1;
       padding: 16px;
@@ -113,7 +127,7 @@
       font-weight: bold;
     }
 
-    /* Modal Vault */
+    /* Saved Clips Vault Modal */
     .clips-modal {
       display: none;
       position: fixed;
@@ -159,7 +173,7 @@
 </head>
 <body>
 
-  <!-- App Header -->
+  <!-- Header Section with Hidden Zoom Controls -->
   <div class="header">
     <div class="back-btn" id="zoomInBtn">‹ Messages</div>
     <div class="contact-info" id="contactHeader">
@@ -169,7 +183,7 @@
     <div class="zoom-out-btn" id="zoomOutBtn"></div>
   </div>
 
-  <!-- Chat Log with Taglish Decoys -->
+  <!-- Taglish Chat Log -->
   <div class="chat-container" id="chatContainer">
     <div class="date-stamp">Yesterday 8:15 PM</div>
     <div class="message received">Nakalimutan ko pala magtanong, san tayo bukas bro?</div>
@@ -191,7 +205,7 @@
     <div class="send-btn" id="sendBtn">↑</div>
   </div>
 
-  <!-- Off-Screen Rendering Elements for iOS Digital Zoom -->
+  <!-- Hidden Off-Screen Rendering Elements for Digital Zoom -->
   <video id="hiddenVideo" autoplay muted playsinline style="display:none;"></video>
   <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
@@ -228,7 +242,7 @@
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
 
-    // Audio Synthesizer
+    // Web Audio Synthesizer
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playSentSound() {
@@ -263,7 +277,6 @@
       });
     }
 
-    // Taglish Auto-Reply Pool
     const randomReplies = [
       "Sige pre, text ka na lang 'pag malapit ka na.",
       "Ge bro, ingat ka sa biyahe!",
@@ -287,7 +300,7 @@
       });
     }
 
-    // Camera Recording Toggle
+    // Toggle Camera & Canvas Processing
     startBtn.onclick = async () => {
       if (!isRecording) {
         try {
@@ -335,7 +348,7 @@
       }
     };
 
-    // iOS Canvas Digital Zoom Loop
+    // Digital Canvas Zoom Frame Loop
     function drawCanvasFrame() {
       if (!hiddenVideo.paused && !hiddenVideo.ended) {
         const vw = hiddenVideo.videoWidth;
@@ -351,7 +364,7 @@
       }
     }
 
-    // Hidden Zoom Tap Events
+    // Hidden Zoom Tap Triggers
     zoomInBtn.onclick = () => {
       if (currentZoom < 3.5) currentZoom += 0.5;
     };
