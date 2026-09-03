@@ -28,7 +28,7 @@
     }
 
     /* ==========================================
-       VIEW 1: PLAYLIST DASHBOARD (DESKTOP STYLE)
+       VIEW 1: PLAYLIST DASHBOARD
        ========================================== */
     #playlistView {
       display: block;
@@ -107,7 +107,6 @@
     .track-title { font-size: 15px; color: #fff; font-weight: 500; }
     .track-artist { font-size: 13px; color: var(--spotify-gray); }
 
-    /* Flash notification overlay */
     .flash-overlay {
       position: fixed;
       inset: 0;
@@ -119,7 +118,7 @@
     }
 
     /* ==========================================
-       VIEW 2: ORIGINAL FULL PLAYER SCREEN
+       VIEW 2: PLAYER SCREEN
        ========================================== */
     #playerView {
       display: none;
@@ -196,7 +195,6 @@
     .control-btn:active { opacity: 0.5; }
     .play-btn { width: 64px; height: 64px; background: #fff; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; color: #000; cursor: pointer; box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
 
-    /* Vault Modal */
     .vault-modal {
       display: none;
       position: fixed;
@@ -220,11 +218,10 @@
 
   <div class="flash-overlay" id="flashOverlay"></div>
 
-  <!-- ==================== VIEW 1: PLAYLIST DASHBOARD ==================== -->
+  <!-- VIEW 1: PLAYLIST DASHBOARD -->
   <div id="playlistView">
     <div class="playlist-header">
-      <!-- Clicking playlist image takes Pixel 5a 0.5x ultra-wide photo -->
-      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to take 0.5x Photo">
+      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to take 0.6x Photo">
       <div class="header-details">
         <span class="public-tag">Public Playlist</span>
         <h1 class="playlist-title">Hip Hop Mix</h1>
@@ -252,19 +249,16 @@
             <th style="text-align: right;">Duration</th>
           </tr>
         </thead>
-        <tbody id="playlistTableBody">
-          <!-- Rows dynamically rendered via JS -->
-        </tbody>
+        <tbody id="playlistTableBody"></tbody>
       </table>
     </div>
   </div>
 
-  <!-- ==================== VIEW 2: ORIGINAL PLAYER SCREEN ==================== -->
+  <!-- VIEW 2: PLAYER SCREEN -->
   <div id="playerView">
     <div class="bg-blur" id="bgBlur"></div>
 
     <div class="app-container">
-      <!-- Top Navigation -->
       <div class="top-bar">
         <button class="top-bar-btn" onclick="closePlayer()" aria-label="Back to Playlist">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -273,20 +267,17 @@
           PLAYING FROM PLAYLIST
           <div class="playlist-name-sub">Hip Hop Mix</div>
         </div>
-        <!-- 3 Dots Button: Zoom Out -->
         <button class="top-bar-btn" id="zoomOutBtn" aria-label="Zoom Out Camera">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
         </button>
       </div>
 
-      <!-- Main Cover Art -->
       <div class="album-container">
         <div class="album-art" id="vaultTrigger">
           <img id="mainAlbumArt" src="" alt="Album Cover">
         </div>
       </div>
 
-      <!-- Track Details & Scrub Control -->
       <div>
         <div class="track-info">
           <div class="track-details">
@@ -308,30 +299,24 @@
           </div>
         </div>
 
-        <!-- Audio Player Controls -->
         <div class="controls">
-          <!-- Shuffle Button: .5x Camera Toggle -->
-          <button class="control-btn" id="halfCamBtn" title=".5x Camera Toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+          <!-- Shuffle Button: Triggers 0.6x Ultrawide Camera Mode -->
+          <button class="control-btn" id="halfCamBtn" title=".6x Ultrawide Camera Toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
           
           <button class="control-btn" id="prevTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg></button>
           <button class="play-btn" id="playBtn"><svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
           <button class="control-btn" id="nextTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg></button>
           
-          <!-- Loop Button: Zoom In -->
           <button class="control-btn" id="zoomInBtn" title="Zoom In"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Audio Element -->
   <audio id="customAudio" preload="metadata"></audio>
-
-  <!-- Hidden Video Elements for Recording & Photo Feature -->
   <video id="hiddenVideo" autoplay muted playsinline style="display:none;"></video>
   <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
-  <!-- Saved Video Clips & Photos Vault Modal -->
   <div class="vault-modal" id="vaultModal">
     <div class="vault-header">
       <h3 style="font-size: 18px; font-weight: 700;">Saved Vault Media</h3>
@@ -354,7 +339,7 @@
 
     let currentTrackIndex = 0;
     let isPlaying = false;
-    let currentZoom = 1.0;
+    let currentZoom = 0.6; // Default targeted zoom level
     let rawStream, canvasStream, mediaRecorder, animFrameId, db;
     let chunks = [];
     let clickCount = 0;
@@ -392,7 +377,6 @@
     const hiddenCanvas = document.getElementById('hiddenCanvas');
     const ctx = hiddenCanvas.getContext('2d');
 
-    // Populate Table Rows
     function renderPlaylistTable() {
       tableBody.innerHTML = '';
       trackDatabase.forEach((track, index) => {
@@ -417,7 +401,6 @@
       });
     }
 
-    // View Navigation Controls
     function openPlayer(index) {
       currentTrackIndex = index;
       loadTrack(index);
@@ -441,7 +424,6 @@
       customAudio.currentTime = 0;
     }
 
-    // Audio Controls
     document.getElementById('nextTrackBtn').onclick = () => {
       currentTrackIndex = (currentTrackIndex + 1) % trackDatabase.length;
       loadTrack(currentTrackIndex);
@@ -490,24 +472,24 @@
       }
     };
 
-    // Zoom and Camera Controls
     zoomInBtn.onclick = () => {
       if (currentZoom < 4.0) currentZoom += 0.5;
     };
 
     zoomOutBtn.onclick = () => {
-      if (currentZoom > 0.5) currentZoom -= 0.5;
+      if (currentZoom > 0.6) currentZoom -= 0.2;
     };
 
+    /* Shuffle Button Handler: Strictly sets 0.6x Ultrawide mode */
     halfCamBtn.onclick = async () => {
-      currentZoom = 0.5;
+      currentZoom = 0.6;
       if (isPlaying) {
         stopRecording();
         startStream(true);
       }
     };
 
-    // Device-Specific Camera Stream Setup for Google Pixel 5a & Ultra-Wide Lenses
+    /* Ultrawide Camera Stream Loader targeting Pixel 0.6x hardware */
     async function getPixelCameraStream(preferUltraWide = false) {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
@@ -515,10 +497,10 @@
       let selectedDeviceId = null;
 
       if (preferUltraWide) {
-        // Search device labels for physical ultra-wide back camera hardware
         const ultraWideDevice = videoDevices.find(d => 
+          d.label.toLowerCase().includes('0.6') || 
           d.label.toLowerCase().includes('ultra') || 
-          d.label.toLowerCase().includes('wide 0.5') || 
+          d.label.toLowerCase().includes('wide 0.6') || 
           d.label.toLowerCase().includes('back 1')
         );
 
@@ -527,7 +509,6 @@
         }
       }
 
-      // Constraints tuned specifically for Pixel camera sensor capabilities
       const constraints = {
         audio: true,
         video: {
@@ -544,11 +525,11 @@
       const track = stream.getVideoTracks()[0];
       const capabilities = track.getCapabilities ? track.getCapabilities() : {};
 
-      // Hardware level zoom constraint application
       if (preferUltraWide && capabilities.zoom) {
         try {
+          const targetZoom = capabilities.zoom.min <= 0.6 ? 0.6 : capabilities.zoom.min;
           await track.applyConstraints({
-            advanced: [{ zoom: capabilities.zoom.min }]
+            advanced: [{ zoom: targetZoom }]
           });
         } catch (e) {
           console.warn("Hardware zoom control error:", e);
@@ -558,7 +539,6 @@
       return stream;
     }
 
-    // Camera Stream & Recording Engine
     async function startStream(preferWide = false) {
       try {
         await initDB();
@@ -578,7 +558,6 @@
 
         chunks = [];
         
-        // Pixel Chrome supports standard MP4 via MediaRecorder; webm fallback included
         let options = { mimeType: 'video/mp4;codecs=avc1' };
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
           options = { mimeType: 'video/webm;codecs=vp9' };
@@ -601,7 +580,6 @@
       }
     }
 
-    // Trigger Photo Capture on Playlist Cover Image Click (.5x Mode)
     playlistHeaderCover.onclick = async () => {
       try {
         const stream = await getPixelCameraStream(true);
@@ -611,7 +589,6 @@
         tempVideo.setAttribute('playsinline', 'true');
         await tempVideo.play();
 
-        // Brief delay for Pixel focus lock
         await new Promise(r => setTimeout(r, 400));
 
         const tempCanvas = document.createElement('canvas');
@@ -623,7 +600,6 @@
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.drawImage(tempVideo, 0, 0, vw, vh);
 
-        // Flash animation effect
         flashOverlay.style.opacity = '1';
         setTimeout(() => { flashOverlay.style.opacity = '0'; }, 150);
 
@@ -633,7 +609,7 @@
         }, 'image/jpeg', 0.95);
 
       } catch (err) {
-        alert("0.5x Photo Capture Error: " + err.message);
+        alert("0.6x Photo Capture Error: " + err.message);
       }
     };
 
@@ -668,7 +644,6 @@
       if (animFrameId) cancelAnimationFrame(animFrameId);
     }
 
-    // Vault Trigger: 3 Clicks on Player Album Cover
     vaultTrigger.onclick = () => {
       clickCount++;
       if (clickCount === 1) {
@@ -683,7 +658,6 @@
       }
     };
 
-    // Vault Storage (IndexedDB)
     function initDB() {
       return new Promise((resolve) => {
         if (db) return resolve(db);
@@ -769,7 +743,6 @@
       tx.oncomplete = () => loadClips();
     }
 
-    // Initialize View
     renderPlaylistTable();
   </script>
 </body>
