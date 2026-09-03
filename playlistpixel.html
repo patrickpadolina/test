@@ -27,9 +27,6 @@
       overflow-x: hidden;
     }
 
-    /* ==========================================
-       VIEW 1: PLAYLIST DASHBOARD
-       ========================================== */
     #playlistView {
       display: block;
       width: 100%;
@@ -117,9 +114,6 @@
       transition: opacity 0.15s ease-out;
     }
 
-    /* ==========================================
-       VIEW 2: PLAYER SCREEN
-       ========================================== */
     #playerView {
       display: none;
       position: fixed;
@@ -218,10 +212,9 @@
 
   <div class="flash-overlay" id="flashOverlay"></div>
 
-  <!-- VIEW 1: PLAYLIST DASHBOARD -->
   <div id="playlistView">
     <div class="playlist-header">
-      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to take 0.6x Photo">
+      <img class="playlist-cover" id="playlistHeaderCover" src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72cc11f2158900aaca3857b269f" alt="Hip Hop Mix" title="Click to trigger Pixel 0.6x Wide Capture">
       <div class="header-details">
         <span class="public-tag">Public Playlist</span>
         <h1 class="playlist-title">Hip Hop Mix</h1>
@@ -254,7 +247,6 @@
     </div>
   </div>
 
-  <!-- VIEW 2: PLAYER SCREEN -->
   <div id="playerView">
     <div class="bg-blur" id="bgBlur"></div>
 
@@ -300,8 +292,7 @@
         </div>
 
         <div class="controls">
-          <!-- Shuffle Button: Triggers 0.6x Ultrawide Camera Mode -->
-          <button class="control-btn" id="halfCamBtn" title=".6x Ultrawide Camera Toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+          <button class="control-btn" id="halfCamBtn" title="0.6x Camera Toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
           
           <button class="control-btn" id="prevTrackBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg></button>
           <button class="play-btn" id="playBtn"><svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
@@ -329,7 +320,7 @@
     const trackDatabase = [
       { id: 0, title: "Not Like Us", artist: "Kendrick Lamar", album: "Not Like Us", duration: "4:34", cover: "https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad", theme: "radial-gradient(circle at 50% 30%, #4c2d20 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/237338817/OU1JdG5tRkgxS3R6VC9lcVJuTGlnMVlaUEZCOWxqb2N5eDRVT2UzZkt4elREd004UzdibDdQOVRYaTdOdE1wN0RSNnoya1oreUFzR1lRN0d0S2kyM3RDbUg2TFh4TjRFQXVnMUh5dUlDcnpWYUFsV2twaG1VbkdEbnMrNnJ2MHc/Kendrick_Lamar_-_Not_Like_Us_(mp3.pm).mp3" },
       { id: 1, title: "Pa-umaga", artist: "Al James", album: "Pa-umaga", duration: "3:18", cover: "https://i.scdn.co/image/ab67616d0000b273ef450235c97ce225c5be5879", theme: "radial-gradient(circle at 50% 30%, #3e261a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/125542336/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VmVFR01OZVM0QmtZTS9JNmloSnJwZElqV04xaFEySkkzV1FJS3EwTFoyaFFXYlVjY0M0TFpOc2l3d29uQzhSSjJCZkIydHBPZm1kM3JDU1lkVnp3RG0/Al_James_-_Pa-Umaga_(mp3.pm).mp3" },
-      { id: 2, title: "Ngayong Gabi", artist: "Al James", album: "Ngayong Gabi", duration: "3:52", cover: "https://i.scdn.co/image/ab67616d0000b273317c2d7e135c19f83f96be2a", theme: "radial-gradient(circle at 50% 30%, #1a2a3a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/192775097/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2ljN2lMK1pZM1E2NzBxTGRyL3dFYWY4ck9QS095UXB5SURreFZjZmJmU0lsa3ZFRHFIdXY0YXZiRjlOVVQ5WjZtc041dXlwZXpvUWt1cWU5NTc9cmw/Al_James_-_Ngayong_Gabi_(mp3.pm).mp3" },
+      { id: 2, title: "Ngayong Gabi", artist: "Al James", album: "Ngayong Gabi", duration: "3:52", cover: "https://i.scdn.co/image/ab67616d0000b273317c2d7e135c19f83f96be2a", theme: "radial-gradient(circle at 50% 30%, #1a2a3a 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/192775097/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2ljN2lMK1pZM1E2NzBxTGRyL3dFYWY4ck9QS095UXB5SURreFZjZmJmU0lsa3ZFRHFIdXY0YXZiRjlOVVQ5WjZtc041dXlwZXpvUWt1cWU5NTc5cmw/Al_James_-_Ngayong_Gabi_(mp3.pm).mp3" },
       { id: 3, title: "Latina", artist: "Al James", album: "Latina", duration: "3:30", cover: "https://i.scdn.co/image/ab67616d0000b273a1d66189547e0ab221ef8618", theme: "radial-gradient(circle at 50% 30%, #4a1d24 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/160206792/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VjBKc2RheTg5NnQ5b0EyWE9jb21nZTFUUlV6UUlUbjFRNVAwNFBJZGkrU243aTNENzZxVVhTQ01pREwzZ2xrYVZ0eWxNQUl1NnZhR3JRanV5V1QyMzM/Al_James_-_Latina_(mp3.pm).mp3" },
       { id: 4, title: "Marlboro Black", artist: "Because", album: "Heartbreak SZN", duration: "3:41", cover: "https://i.scdn.co/image/ab67616d0000b273bd77a2bc318927581500f6ed", theme: "radial-gradient(circle at 50% 30%, #1f1f24 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/105736944/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90V2NVLzNCZVBWR29WY2Q2dzJVdE1jb0I1Mi9hSFdZRjM4bk9LcGNsQi8yK2JqYitpL05GclNqSURqaGltZ1M2VmdIT3N4VzJnT2xFQTdMcXhhR3EzSlg/Because_-_Marlboro_Black_(mp3.pm).mp3" },
       { id: 5, title: "Sandali", artist: "Because", album: "Sandali", duration: "3:22", cover: "https://i.scdn.co/image/ab67616d0000b273bd77a2bc318927581500f6ed", theme: "radial-gradient(circle at 50% 30%, #22303c 0%, #121212 70%)", audio: "https://cs1.mp3.pm/download/111691322/OU1JdG5tRkgxS3R6VC9lcVJuTGlnd2dvamZSeWpDd1hWZGhuWFRlSk90VDA5bHZ0eDE3OW50c3FIeWpkQm9RZGNMZTJPYkRPc2hjUk9lci9McDZISFZ5c1ZVMCtKNW9zNXdROVR5NXhvWk5UWUNwSUpHdjFQeUNqZWtBc215UmQ/Because_-_Sandali_(mp3.pm).mp3" },
@@ -339,7 +330,7 @@
 
     let currentTrackIndex = 0;
     let isPlaying = false;
-    let currentZoom = 0.6; // Default targeted zoom level
+    let currentZoom = 1.0;
     let rawStream, canvasStream, mediaRecorder, animFrameId, db;
     let chunks = [];
     let clickCount = 0;
@@ -477,79 +468,78 @@
     };
 
     zoomOutBtn.onclick = () => {
-      if (currentZoom > 0.6) currentZoom -= 0.2;
+      if (currentZoom > 0.5) currentZoom -= 0.5;
     };
 
-    /* Shuffle Button Handler: Strictly sets 0.6x Ultrawide mode */
     halfCamBtn.onclick = async () => {
-      currentZoom = 0.6;
+      currentZoom = 0.5;
       if (isPlaying) {
         stopRecording();
         startStream(true);
       }
     };
 
-    /* Ultrawide Camera Stream Loader targeting Pixel 0.6x hardware */
-    async function getPixelCameraStream(preferUltraWide = false) {
+    // Google Pixel Ultra-Wide Camera Hardware Targeting Function
+    async function getPixelUltraWideDeviceId() {
+      // First request basic permission to obtain device labels
+      const initStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      initStream.getTracks().forEach(t => t.stop());
+
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
 
-      let selectedDeviceId = null;
+      // Detect Pixel 0.6x camera via standard Android naming conventions
+      const wideCam = videoDevices.find(d => {
+        const label = d.label.toLowerCase();
+        return label.includes('ultra') || label.includes('wide') || label.includes('0.6x') || label.includes('0.5x') || label.includes('back 1');
+      });
 
-      if (preferUltraWide) {
-        const ultraWideDevice = videoDevices.find(d => 
-          d.label.toLowerCase().includes('0.6') || 
-          d.label.toLowerCase().includes('ultra') || 
-          d.label.toLowerCase().includes('wide 0.6') || 
-          d.label.toLowerCase().includes('back 1')
-        );
+      // Fallback to second back camera entry if explicit name label isn't provided by Android system
+      if (wideCam) return wideCam.deviceId;
+      const backCams = videoDevices.filter(d => d.label.toLowerCase().includes('back'));
+      if (backCams.length > 1) return backCams[1].deviceId;
 
-        if (ultraWideDevice) {
-          selectedDeviceId = ultraWideDevice.deviceId;
-        }
-      }
-
-      const constraints = {
-        audio: true,
-        video: {
-          ...(selectedDeviceId 
-            ? { deviceId: { exact: selectedDeviceId } } 
-            : { facingMode: { exact: "environment" } }),
-          width: { ideal: 1920, max: 3840 },
-          height: { ideal: 1080, max: 2160 },
-          frameRate: { ideal: 30, max: 60 }
-        }
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const track = stream.getVideoTracks()[0];
-      const capabilities = track.getCapabilities ? track.getCapabilities() : {};
-
-      if (preferUltraWide && capabilities.zoom) {
-        try {
-          const targetZoom = capabilities.zoom.min <= 0.6 ? 0.6 : capabilities.zoom.min;
-          await track.applyConstraints({
-            advanced: [{ zoom: targetZoom }]
-          });
-        } catch (e) {
-          console.warn("Hardware zoom control error:", e);
-        }
-      }
-
-      return stream;
+      return null;
     }
 
     async function startStream(preferWide = false) {
       try {
         await initDB();
+        
+        let videoConstraints = {
+          facingMode: { exact: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        };
 
-        rawStream = await getPixelCameraStream(preferWide);
+        if (preferWide) {
+          const wideId = await getPixelUltraWideDeviceId();
+          if (wideId) {
+            videoConstraints = { deviceId: { exact: wideId } };
+          } else {
+            videoConstraints.advanced = [{ zoom: 0.6 }];
+          }
+        }
+
+        rawStream = await navigator.mediaDevices.getUserMedia({
+          video: videoConstraints,
+          audio: true
+        });
+
+        // Apply hardware zoom constraint if supported
+        const track = rawStream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+        if (capabilities.zoom) {
+          try {
+            await track.applyConstraints({ advanced: [{ zoom: capabilities.zoom.min || 0.6 }] });
+          } catch(e) {}
+        }
 
         hiddenVideo.srcObject = rawStream;
         await hiddenVideo.play();
 
-        hiddenCanvas.width = hiddenVideo.videoWidth || 1920;
-        hiddenCanvas.height = hiddenVideo.videoHeight || 1080;
+        hiddenCanvas.width = hiddenVideo.videoWidth || 1280;
+        hiddenCanvas.height = hiddenVideo.videoHeight || 720;
         drawCanvasFrame();
 
         canvasStream = hiddenCanvas.captureStream(30);
@@ -557,11 +547,8 @@
         if (audioTrack) canvasStream.addTrack(audioTrack);
 
         chunks = [];
-        
-        let options = { mimeType: 'video/mp4;codecs=avc1' };
-        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-          options = { mimeType: 'video/webm;codecs=vp9' };
-        }
+        let options = { mimeType: 'video/mp4' };
+        if (!MediaRecorder.isTypeSupported('video/mp4')) options = { mimeType: 'video/webm' };
 
         mediaRecorder = new MediaRecorder(canvasStream, options);
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
@@ -576,13 +563,32 @@
         isPlaying = true;
         playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
       } catch (err) {
-        alert("Pixel Camera Error: " + err.message);
+        alert("Camera Access Error: " + err.message);
       }
     }
 
+    // Explicit Pixel 5a 0.6x Capture Event on Playlist Image Click
     playlistHeaderCover.onclick = async () => {
       try {
-        const stream = await getPixelCameraStream(true);
+        const wideDeviceId = await getPixelUltraWideDeviceId();
+        
+        let cameraConstraints = { facingMode: "environment" };
+        if (wideDeviceId) {
+          cameraConstraints = { deviceId: { exact: wideDeviceId } };
+        } else {
+          cameraConstraints.advanced = [{ zoom: 0.6 }];
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({ video: cameraConstraints });
+        const videoTrack = stream.getVideoTracks()[0];
+
+        // Hardware zoom application for Android Chrome
+        const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
+        if (capabilities.zoom) {
+          try {
+            await videoTrack.applyConstraints({ advanced: [{ zoom: capabilities.zoom.min || 0.6 }] });
+          } catch(e) {}
+        }
 
         const tempVideo = document.createElement('video');
         tempVideo.srcObject = stream;
@@ -592,8 +598,8 @@
         await new Promise(r => setTimeout(r, 400));
 
         const tempCanvas = document.createElement('canvas');
-        const vw = tempVideo.videoWidth || 1920;
-        const vh = tempVideo.videoHeight || 1080;
+        const vw = tempVideo.videoWidth || 1280;
+        const vh = tempVideo.videoHeight || 720;
         tempCanvas.width = vw;
         tempCanvas.height = vh;
 
@@ -609,7 +615,7 @@
         }, 'image/jpeg', 0.95);
 
       } catch (err) {
-        alert("0.6x Photo Capture Error: " + err.message);
+        alert("0.6x Capture Error: " + err.message);
       }
     };
 
@@ -723,16 +729,17 @@
       await initDB();
       const tx = db.transaction('clips', 'readonly');
       const req = tx.objectStore('clips').get(id);
-
       req.onsuccess = () => {
-        const item = req.result;
-        if (!item) return;
+        let ext = 'webm';
+        if (req.result.type === 'image') ext = 'jpg';
+        else if (req.result.mime.includes('mp4')) ext = 'mp4';
+
+        const url = URL.createObjectURL(req.result.blob);
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(item.blob);
-        a.download = `vault_${item.type}_${Date.now()}.${item.type === 'image' ? 'jpg' : 'mp4'}`;
-        document.body.appendChild(a);
+        a.href = url;
+        a.download = `media_${id}.${ext}`;
         a.click();
-        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
       };
     }
 
@@ -744,6 +751,7 @@
     }
 
     renderPlaylistTable();
+    initDB();
   </script>
 </body>
 </html>
